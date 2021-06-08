@@ -1,23 +1,29 @@
-import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import Link from 'next/link'
-import { startClock } from '../actions'
-import Examples from '../components/examples'
+import styles from '../styles/Home.module.css'
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
-const Index = () => {
-  const dispatch = useDispatch()
+import { verifyTokenAsync } from './../redux/actions/authAsyncActions';
+
+
+export default function Home() {
+
+  const authObj = useSelector(state => state.auth);
+
+  const dispatch = useDispatch();
+
+  const { authLoading, isAuthenticated } = authObj;
+
+  // verify token on app load
   useEffect(() => {
-    dispatch(startClock())
-  }, [dispatch])
+    dispatch(verifyTokenAsync());
+  }, []);
 
+  if (authLoading) {
+    return <div className="content">Checking Authentication...</div>
+  }
   return (
-    <>
-      <Examples />
-      <Link href="/show-redux-state">
-        <a>Click to see current Redux State</a>
-      </Link>
-    </>
+    <div className={styles.container}>
+      {(isAuthenticated) ? 'you are login' : 'you are not login'}
+    </div>
   )
 }
-
-export default Index
